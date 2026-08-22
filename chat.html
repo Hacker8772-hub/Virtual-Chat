@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no,
+viewport-fit=cover">
+
+<title>Virtual Chat</title>
+
+<style>
+
+/* ==============================
+   RESET
+============================== */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+html,
+body{
+
+    width:100%;
+    height:100%;
+
+    overflow:hidden;
+
+    background:#000;
+
+}
+
+
+/* ==============================
+   APP
+============================== */
+
+#app{
+
+    position:fixed;
+
+    left:0;
+    top:0;
+    right:0;
+    bottom:0;
+
+    width:100%;
+    height:100%;
+
+    background:#000;
+
+    overflow:hidden;
+
+}
+
+
+/* ==============================
+   HEADER
+============================== */
+
+.header{
+
+    position:fixed;
+
+    left:0;
+    right:0;
+    top:0;
+
+    height:62px;
+
+    background:#000;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 8px 0 18px;
+
+    border-bottom:1px solid #222;
+
+    z-index:5000;
+
+}
+
+
+.title{
+
+    color:#38bdf8;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+}
+
+
+.menu-button{
+
+    width:48px;
+    height:48px;
+
+    border:0;
+
+    outline:0;
+
+    background:transparent;
+
+    color:#fff;
+
+    font-size:34px;
+
+    line-height:48px;
+
+    text-align:center;
+
+}
+
+
+/* ==============================
+   THREE DOT MENU
+============================== */
+
+.menu{
+
+    position:fixed;
+
+    top:58px;
+
+    right:8px;
+
+    width:190px;
+
+    padding:6px;
+
+    background:#151515;
+
+    border:1px solid #333;
+
+    border-radius:12px;
+
+    display:none;
+
+    z-index:10000;
+
+    box-shadow:0 8px 30px rgba(0,0,0,.7);
+
+}
+
+
+.menu.open{
+
+    display:block;
+
+}
+
+
+.menu-item{
+
+    width:100%;
+
+    padding:14px;
+
+    border:0;
+
+    border-radius:8px;
+
+    background:transparent;
+
+    color:#fff;
+
+    text-align:left;
+
+    font-size:16px;
+
+}
+
+
+.menu-item:active{
+
+    background:#292929;
+
+}
+
+
+/* ==============================
+   CHAT SCREEN
+============================== */
+
+.chat-screen{
+
+    position:fixed;
+
+    left:0;
+    right:0;
+
+    top:62px;
+    bottom:0;
+
+    overflow:hidden;
+
+    background:#000;
+
+}
+
+
+/* ==============================
+   WALLPAPER
+============================== */
+
+.wallpaper{
+
+    position:absolute;
+
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+
+    background-color:#000;
+
+    background-position:center;
+
+    background-size:cover;
+
+    background-repeat:no-repeat;
+
+    z-index:0;
+
+}
+
+
+/* ==============================
+   OVERLAY
+============================== */
+
+.wallpaper-overlay{
+
+    position:absolute;
+
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+
+    background:rgba(0,0,0,.30);
+
+    z-index:1;
+
+    pointer-events:none;
+
+}
+
+
+/* ==============================
+   CHAT AREA
+============================== */
+
+#chatArea{
+
+    position:absolute;
+
+    left:0;
+    right:0;
+
+    top:0;
+    bottom:0;
+
+    z-index:2;
+
+    overflow-y:auto;
+
+    overflow-x:hidden;
+
+    padding:12px;
+
+    padding-bottom:82px;
+
+    -webkit-overflow-scrolling:touch;
+
+}
+
+
+/* ==============================
+   MESSAGE
+============================== */
+
+.message{
+
+    width:max-content;
+
+    max-width:78%;
+
+    margin-bottom:9px;
+
+    padding:9px 12px;
+
+    border-radius:14px;
+
+    color:#fff;
+
+    font-size:15px;
+
+    line-height:1.35;
+
+    word-break:break-word;
+
+}
+
+
+.message.sent{
+
+    margin-left:auto;
+
+    background:#075e54;
+
+    border-bottom-right-radius:4px;
+
+}
+
+
+.message.received{
+
+    margin-right:auto;
+
+    background:#202020;
+
+    border-bottom-left-radius:4px;
+
+}
+
+
+/* ==============================
+   TIME
+============================== */
+
+.message-time{
+
+    margin-top:4px;
+
+    text-align:right;
+
+    color:#aaa;
+
+    font-size:10px;
+
+}
+
+
+/* ==============================
+   INPUT BAR
+============================== */
+
+#inputBar{
+
+    position:fixed;
+
+    left:0;
+
+    width:100%;
+
+    height:64px;
+
+    min-height:64px;
+
+    background:#000;
+
+    border-top:1px solid #222;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    padding:8px;
+
+    z-index:999999;
+
+}
+
+
+/* ==============================
+   ATTACH BUTTON
+============================== */
+
+#attachButton{
+
+    flex:0 0 43px;
+
+    width:43px;
+
+    height:43px;
+
+    border:0;
+
+    outline:0;
+
+    border-radius:50%;
+
+    background:#222;
+
+    color:#fff;
+
+    font-size:21px;
+
+}
+
+
+/* ==============================
+   INPUT
+============================== */
+
+#messageInput{
+
+    flex:1;
+
+    min-width:0;
+
+    height:44px;
+
+    border:0;
+
+    outline:0;
+
+    border-radius:23px;
+
+    background:#222;
+
+    color:#fff;
+
+    padding:0 16px;
+
+    font-size:16px;
+
+}
+
+
+#messageInput::placeholder{
+
+    color:#999;
+
+}
+
+
+/* ==============================
+   SEND
+============================== */
+
+#sendButton{
+
+    flex:0 0 45px;
+
+    width:45px;
+
+    height:45px;
+
+    border:0;
+
+    outline:0;
+
+    border-radius:50%;
+
+    background:#38bdf8;
+
+    color:#000;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+}
+
+
+#sendButton:active{
+
+    transform:scale(.94);
+
+}
+
+
+/* ==============================
+   ATTACH MENU
+============================== */
+
+#attachMenu{
+
+    position:fixed;
+
+    left:8px;
+
+    width:190px;
+
+    padding:6px;
+
+    background:#111;
+
+    border:1px solid #333;
+
+    border-radius:12px;
+
+    display:none;
+
+    z-index:1000000;
+
+}
+
+
+#attachMenu.open{
+
+    display:block;
+
+}
+
+
+.attach-item{
+
+    width:100%;
+
+    padding:13px;
+
+    margin:2px 0;
+
+    border:0;
+
+    border-radius:8px;
+
+    background:#222;
+
+    color:#fff;
+
+    text-align:left;
+
+    font-size:15px;
+
+}
+
+
+/* ==============================
+   STATUS
+============================== */
+
+#status{
+
+    position:fixed;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    bottom:75px;
+
+    padding:8px 14px;
+
+    border-radius:20px;
+
+    background:#111;
+
+    color:#fff;
+
+    display:none;
+
+    z-index:2000000;
+
+}
+
+
+/* ==============================
+   PREVIEW
+============================== */
+
+.preview-image{
+
+    max-width:240px;
+
+    max-height:280px;
+
+    border-radius:10px;
+
+    display:block;
+
+}
+
+
+.preview-video{
+
+    width:240px;
+
+    max-height:280px;
+
+    border-radius:10px;
+
+    display:block;
+
+}
+
+
+.file-box{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    color:#fff;
+
+}
+
+
+.file-icon{
+
+    font-size:25px;
+
+}
+
+
+/* ==============================
+   SCROLLBAR
+============================== */
+
+#chatArea::-webkit-scrollbar{
+
+    width:4px;
+
+}
+
+
+#chatArea::-webkit-scrollbar-thumb{
+
+    background:#444;
+
+    border-radius:10px;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div id="app">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="title">
+            Virtual Chat
+        </div>
+
+
+        <button
+            id="menuButton"
+            class="menu-button">
+            ⋮
+        </button>
+
+    </div>
+
+
+    <!-- THREE DOT MENU -->
+
+    <div
+        id="mainMenu"
+        class="menu">
+
+        <button
+            id="wallpaperButton"
+            class="menu-item">
+            Wallpaper
+        </button>
+
+
+        <button
+            id="logoutButton"
+            class="menu-item">
+            Logout
+        </button>
+
+    </div>
+
+
+    <!-- CHAT -->
+
+    <div class="chat-screen">
+
+
+        <div
+            id="wallpaper"
+            class="wallpaper">
+        </div>
+
+
+        <div
+            class="wallpaper-overlay">
+        </div>
+
+
+        <div
+            id="chatArea">
+        </div>
+
+
+    </div>
+
+
+    <!-- ATTACH MENU -->
+
+    <div
+        id="attachMenu">
+
+        <button
+            id="photoButton"
+            class="attach-item">
+            🖼️ Photo
+        </button>
+
+
+        <button
+            id="videoButton"
+            class="attach-item">
+            🎥 Video
+        </button>
+
+
+        <button
+            id="fileButton"
+            class="attach-item">
+            📄 File
+        </button>
+
+    </div>
+
+
+    <!-- INPUT BAR -->
+
+    <div
+        id="inputBar">
+
+        <button
+            id="attachButton">
+            📎
+        </button>
+
+
+        <input
+            id="messageInput"
+            type="text"
+            placeholder="Message"
+            autocomplete="off"
+            enterkeyhint="send">
+
+
+        <button
+            id="sendButton">
+            ➤
+        </button>
+
+    </div>
+
+
+    <div id="status">
+        Please wait...
+    </div>
+
+</div>
+
+
+<!-- FILE INPUTS -->
+
+<input
+    id="wallpaperInput"
+    type="file"
+    accept="image/*"
+    hidden>
+
+
+<input
+    id="photoInput"
+    type="file"
+    accept="image/*"
+    hidden>
+
+
+<input
+    id="videoInput"
+    type="file"
+    accept="video/*"
+    hidden>
+
+
+<input
+    id="fileInput"
+    type="file"
+    hidden>
+
+
+<script type="module">
+
+
+/* =====================================================
+   FIREBASE
+===================================================== */
+
+import {
+    initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+
+
+import {
+    getAuth,
+    onAuthStateChanged,
+    signOut
+}
+from
+"https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    query,
+    where,
+    getDocs,
+    orderBy,
+    onSnapshot,
+    serverTimestamp
+}
+from
+"https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+
+/* =====================================================
+   FIREBASE CONFIG
+===================================================== */
+
+const firebaseConfig = {
+
+    apiKey:
+    "AIzaSyDCeUtuKciz8z3C0x__AEZeHv8X4Y9ClFU",
+
+    authDomain:
+    "virtualchat-1213.firebaseapp.com",
+
+    projectId:
+    "virtualchat-1213",
+
+    storageBucket:
+    "virtualchat-1213.firebasestorage.app",
+
+    messagingSenderId:
+    "10737514662",
+
+    appId:
+    "1:10737514662:web:7d418df0cf4f441d275c67",
+
+    measurementId:
+    "G-8WVST7HH7D"
+
+};
+
+
+const app =
+    initializeApp(
+        firebaseConfig
+    );
+
+
+const auth =
+    getAuth(app);
+
+
+const db =
+    getFirestore(app);
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const inputBar =
+    document.getElementById(
+        "inputBar"
+    );
+
+
+const messageInput =
+    document.getElementById(
+        "messageInput"
+    );
+
+
+const sendButton =
+    document.getElementById(
+        "sendButton"
+    );
+
+
+const attachButton =
+    document.getElementById(
+        "attachButton"
+    );
+
+
+const attachMenu =
+    document.getElementById(
+        "attachMenu"
+    );
+
+
+const mainMenu =
+    document.getElementById(
+        "mainMenu"
+    );
+
+
+const menuButton =
+    document.getElementById(
+        "menuButton"
+    );
+
+
+const chatArea =
+    document.getElementById(
+        "chatArea"
+    );
+
+
+const wallpaper =
+    document.getElementById(
+        "wallpaper"
+    );
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let currentUser = null;
+
+let adminUid = null;
+
+let chatId = null;
+
+let unsubscribeMessages = null;
+
+
+/* =====================================================
+   WALLPAPER
+===================================================== */
+
+const wallpaperInput =
+    document.getElementById(
+        "wallpaperInput"
+    );
+
+
+function loadWallpaper(){
+
+    const saved =
+        localStorage.getItem(
+            "virtual_chat_wallpaper"
+        );
+
+
+    if(saved){
+
+        wallpaper.style.backgroundImage =
+            'url("' + saved + '")';
+
+    }
+
+}
+
+
+loadWallpaper();
+
+
+document.getElementById(
+    "wallpaperButton"
+).onclick =
+function(){
+
+    mainMenu.classList.remove(
+        "open"
+    );
+
+    wallpaperInput.click();
+
+};
+
+
+wallpaperInput.onchange =
+function(event){
+
+    const file =
+        event.target.files[0];
+
+
+    if(!file){
+
+        return;
+
+    }
+
+
+    if(
+        !file.type.startsWith(
+            "image/"
+        )
+    ){
+
+        alert(
+            "Please select an image."
+        );
+
+        return;
+
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+    function(){
+
+        try{
+
+            localStorage.setItem(
+                "virtual_chat_wallpaper",
+                reader.result
+            );
+
+
+            wallpaper.style.backgroundImage =
+                'url("' +
+                reader.result +
+                '")';
+
+        }
+        catch(error){
+
+            alert(
+                "Image is too large. Please select a smaller photo."
+            );
+
+        }
+
+    };
+
+
+    reader.readAsDataURL(
+        file
+    );
+
+
+    event.target.value =
+        "";
+
+};
+
+
+/* =====================================================
+   THREE DOT
+===================================================== */
+
+menuButton.onclick =
+function(event){
+
+    event.stopPropagation();
+
+    mainMenu.classList.toggle(
+        "open"
+    );
+
+    attachMenu.classList.remove(
+        "open"
+    );
+
+};
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+document.getElementById(
+    "logoutButton"
+).onclick =
+async function(){
+
+    try{
+
+        await signOut(auth);
+
+        window.location.href =
+            "index.html";
+
+    }
+    catch(error){
+
+        console.error(
+            error
+        );
+
+        alert(
+            "Logout failed."
+        );
+
+    }
+
+};
+
+
+/* =====================================================
+   CLOSE MENUS
+===================================================== */
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            !mainMenu.contains(
+                event.target
+            ) &&
+            event.target !== menuButton
+        ){
+
+            mainMenu.classList.remove(
+                "open"
+            );
+
+        }
+
+
+        if(
+            !attachMenu.contains(
+                event.target
+            ) &&
+            event.target !== attachButton
+        ){
+
+            attachMenu.classList.remove(
+                "open"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   FIND ADMIN
+===================================================== */
+
+async function findAdmin(){
+
+    try{
+
+        /*
+         * users collection থেকে
+         * role == admin user খোঁজা হবে।
+         */
+
+        const adminQuery =
+            query(
+                collection(
+                    db,
+                    "users"
+                ),
+                where(
+                    "role",
+                    "==",
+                    "admin"
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(
+                adminQuery
+            );
+
+
+        if(
+            snapshot.empty
+        ){
+
+            console.error(
+                "No admin account found."
+            );
+
+
+            alert(
+                "Admin account পাওয়া যায়নি।"
+            );
+
+
+            return false;
+
+        }
+
+
+        /*
+         * প্রথম Admin।
+         */
+
+        adminUid =
+            snapshot.docs[0].id;
+
+
+        /*
+         * Admin + User
+         * একই chat ID পাবে।
+         */
+
+        chatId =
+            [
+                adminUid,
+                currentUser.uid
+            ]
+            .sort()
+            .join("_");
+
+
+        console.log(
+            "Admin UID:",
+            adminUid
+        );
+
+
+        console.log(
+            "Current User UID:",
+            currentUser.uid
+        );
+
+
+        console.log(
+            "Chat ID:",
+            chatId
+        );
+
+
+        return true;
+
+    }
+    catch(error){
+
+        console.error(
+            "Admin search error:",
+            error
+        );
+
+
+        alert(
+            "Admin খুঁজে পাওয়া যায়নি।"
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+/* =====================================================
+   AUTH
+===================================================== */
+
+onAuthStateChanged(
+    auth,
+    async function(user){
+
+        if(!user){
+
+            window.location.href =
+                "index.html";
+
+            return;
+
+        }
+
+
+        currentUser =
+            user;
+
+
+        console.log(
+            "Logged in:",
+            currentUser.uid
+        );
+
+
+        /*
+         * Admin খুঁজে chat ID তৈরি।
+         */
+
+        const found =
+            await findAdmin();
+
+
+        if(!found){
+
+            return;
+
+        }
+
+
+        /*
+         * Realtime messages শুরু।
+         */
+
+        loadMessages();
+
+
+        setTimeout(
+            fixKeyboardBar,
+            300
+        );
+
+    }
+);
+
+
+/* =====================================================
+   SEND MESSAGE
+===================================================== */
+
+async function sendMessage(){
+
+    const text =
+        messageInput.value.trim();
+
+
+    if(
+        !text ||
+        !currentUser ||
+        !chatId
+    ){
+
+        return;
+
+    }
+
+
+    sendButton.disabled =
+        true;
+
+
+    try{
+
+        await addDoc(
+
+            collection(
+                db,
+                "chats",
+                chatId,
+                "messages"
+            ),
+
+            {
+
+                senderId:
+                    currentUser.uid,
+
+                senderEmail:
+                    currentUser.email || "",
+
+                type:
+                    "text",
+
+                text:
+                    text,
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+
+        );
+
+
+        messageInput.value =
+            "";
+
+
+        messageInput.focus();
+
+
+        setTimeout(
+            fixKeyboardBar,
+            100
+        );
+
+    }
+    catch(error){
+
+        console.error(
+            "SEND MESSAGE ERROR:",
+            error
+        );
+
+
+        alert(
+            "Message send failed: " +
+            error.message
+        );
+
+    }
+
+
+    sendButton.disabled =
+        false;
+
+}
+
+
+/* =====================================================
+   SEND BUTTON
+===================================================== */
+
+sendButton.onclick =
+    sendMessage;
+
+
+/* =====================================================
+   ENTER SEND
+===================================================== */
+
+messageInput.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key === "Enter"
+        ){
+
+            event.preventDefault();
+
+            sendMessage();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   LOAD MESSAGES
+===================================================== */
+
+function loadMessages(){
+
+    if(
+        !chatId
+    ){
+
+        return;
+
+    }
+
+
+    /*
+     * আগের listener থাকলে বন্ধ করা।
+     */
+
+    if(
+        unsubscribeMessages
+    ){
+
+        unsubscribeMessages();
+
+    }
+
+
+    const ref =
+        collection(
+            db,
+            "chats",
+            chatId,
+            "messages"
+        );
+
+
+    const q =
+        query(
+            ref,
+            orderBy(
+                "createdAt",
+                "asc"
+            )
+        );
+
+
+    unsubscribeMessages =
+        onSnapshot(
+
+            q,
+
+            function(snapshot){
+
+                chatArea.innerHTML =
+                    "";
+
+
+                snapshot.forEach(
+                    function(docSnap){
+
+                        const data =
+                            docSnap.data();
+
+
+                        showMessage(
+                            data
+                        );
+
+                    }
+                );
+
+
+                scrollBottom();
+
+            },
+
+
+            function(error){
+
+                console.error(
+                    "FIRESTORE LISTENER ERROR:",
+                    error
+                );
+
+
+                if(
+                    error.code ===
+                    "permission-denied"
+                ){
+
+                    alert(
+                        "Firestore permission denied. Rules check করো।"
+                    );
+
+                }
+
+            }
+
+        );
+
+}
+
+
+/* =====================================================
+   SHOW MESSAGE
+===================================================== */
+
+function showMessage(data){
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+
+    box.className =
+        "message " +
+        (
+            data.senderId ===
+            currentUser.uid
+
+            ?
+
+            "sent"
+
+            :
+
+            "received"
+        );
+
+
+    if(
+        data.type === "text"
+    ){
+
+        const text =
+            document.createElement(
+                "div"
+            );
+
+
+        text.textContent =
+            data.text || "";
+
+
+        box.appendChild(
+            text
+        );
+
+    }
+
+
+    const time =
+        document.createElement(
+            "div"
+        );
+
+
+    time.className =
+        "message-time";
+
+
+    time.textContent =
+        getTime(
+            data.createdAt
+        );
+
+
+    box.appendChild(
+        time
+    );
+
+
+    chatArea.appendChild(
+        box
+    );
+
+}
+
+
+/* =====================================================
+   TIME
+===================================================== */
+
+function getTime(timestamp){
+
+    if(!timestamp){
+
+        return "";
+
+    }
+
+
+    try{
+
+        const date =
+            timestamp.toDate();
+
+
+        return date.toLocaleTimeString(
+            [],
+            {
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        );
+
+    }
+    catch(error){
+
+        return "";
+
+    }
+
+}
+
+
+/* =====================================================
+   SCROLL
+===================================================== */
+
+function scrollBottom(){
+
+    setTimeout(
+        function(){
+
+            chatArea.scrollTop =
+                chatArea.scrollHeight;
+
+        },
+        80
+    );
+
+}
+
+
+/* =====================================================
+   ATTACH BUTTON
+===================================================== */
+
+attachButton.onclick =
+function(event){
+
+    event.stopPropagation();
+
+
+    attachMenu.classList.toggle(
+        "open"
+    );
+
+
+    mainMenu.classList.remove(
+        "open"
+    );
+
+
+    positionAttachMenu();
+
+};
+
+
+/* =====================================================
+   ATTACH MENU POSITION
+===================================================== */
+
+function positionAttachMenu(){
+
+    const bar =
+        inputBar.getBoundingClientRect();
+
+
+    attachMenu.style.left =
+        "8px";
+
+
+    attachMenu.style.top =
+        (
+            bar.top -
+            attachMenu.offsetHeight -
+            8
+        ) + "px";
+
+}
+
+
+/* =====================================================
+   PHOTO
+===================================================== */
+
+document.getElementById(
+    "photoButton"
+).onclick =
+function(){
+
+    attachMenu.classList.remove(
+        "open"
+    );
+
+
+    document.getElementById(
+        "photoInput"
+    ).click();
+
+};
+
+
+/* =====================================================
+   VIDEO
+===================================================== */
+
+document.getElementById(
+    "videoButton"
+).onclick =
+function(){
+
+    attachMenu.classList.remove(
+        "open"
+    );
+
+
+    document.getElementById(
+        "videoInput"
+    ).click();
+
+};
+
+
+/* =====================================================
+   FILE
+===================================================== */
+
+document.getElementById(
+    "fileButton"
+).onclick =
+function(){
+
+    attachMenu.classList.remove(
+        "open"
+    );
+
+
+    document.getElementById(
+        "fileInput"
+    ).click();
+
+};
+
+
+/* =====================================================
+   LOCAL PHOTO
+===================================================== */
+
+document.getElementById(
+    "photoInput"
+).onchange =
+function(event){
+
+    const file =
+        event.target.files[0];
+
+
+    if(file){
+
+        showLocalFile(
+            file,
+            "photo"
+        );
+
+    }
+
+
+    event.target.value =
+        "";
+
+};
+
+
+/* =====================================================
+   LOCAL VIDEO
+===================================================== */
+
+document.getElementById(
+    "videoInput"
+).onchange =
+function(event){
+
+    const file =
+        event.target.files[0];
+
+
+    if(file){
+
+        showLocalFile(
+            file,
+            "video"
+        );
+
+    }
+
+
+    event.target.value =
+        "";
+
+};
+
+
+/* =====================================================
+   LOCAL FILE
+===================================================== */
+
+document.getElementById(
+    "fileInput"
+).onchange =
+function(event){
+
+    const file =
+        event.target.files[0];
+
+
+    if(file){
+
+        showLocalFile(
+            file,
+            "file"
+        );
+
+    }
+
+
+    event.target.value =
+        "";
+
+};
+
+
+/* =====================================================
+   LOCAL FILE PREVIEW
+===================================================== */
+
+function showLocalFile(
+    file,
+    type
+){
+
+    const url =
+        URL.createObjectURL(
+            file
+        );
+
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+
+    box.className =
+        "message sent";
+
+
+    if(
+        type === "photo"
+    ){
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+
+        image.src =
+            url;
+
+
+        image.className =
+            "preview-image";
+
+
+        box.appendChild(
+            image
+        );
+
+    }
+
+
+    else if(
+        type === "video"
+    ){
+
+        const video =
+            document.createElement(
+                "video"
+            );
+
+
+        video.src =
+            url;
+
+
+        video.controls =
+            true;
+
+
+        video.className =
+            "preview-video";
+
+
+        box.appendChild(
+            video
+        );
+
+    }
+
+
+    else{
+
+        const fileBox =
+            document.createElement(
+                "div"
+            );
+
+
+        fileBox.className =
+            "file-box";
+
+
+        const icon =
+            document.createElement(
+                "span"
+            );
+
+
+        icon.className =
+            "file-icon";
+
+
+        icon.textContent =
+            "📄";
+
+
+        const name =
+            document.createElement(
+                "span"
+            );
+
+
+        name.textContent =
+            file.name;
+
+
+        fileBox.appendChild(
+            icon
+        );
+
+
+        fileBox.appendChild(
+            name
+        );
+
+
+        box.appendChild(
+            fileBox
+        );
+
+    }
+
+
+    const time =
+        document.createElement(
+            "div"
+        );
+
+
+    time.className =
+        "message-time";
+
+
+    time.textContent =
+        "Local";
+
+
+    box.appendChild(
+        time
+    );
+
+
+    chatArea.appendChild(
+        box
+    );
+
+
+    scrollBottom();
+
+}
+
+
+/* =====================================================
+   KEYBOARD BAR FIX
+===================================================== */
+
+function fixKeyboardBar(){
+
+    const bar =
+        document.getElementById(
+            "inputBar"
+        );
+
+
+    if(!bar){
+
+        return;
+
+    }
+
+
+    if(
+        window.visualViewport
+    ){
+
+        const viewport =
+            window.visualViewport;
+
+
+        const viewportHeight =
+            viewport.height;
+
+
+        const viewportTop =
+            viewport.offsetTop;
+
+
+        const barHeight =
+            bar.offsetHeight;
+
+
+        const topPosition =
+            viewportTop +
+            viewportHeight -
+            barHeight;
+
+
+        bar.style.top =
+            topPosition + "px";
+
+
+        bar.style.bottom =
+            "auto";
+
+
+        const keyboardHeight =
+            Math.max(
+
+                0,
+
+                window.innerHeight -
+                viewport.height -
+                viewport.offsetTop
+
+            );
+
+
+        chatArea.style.paddingBottom =
+            (
+                barHeight +
+                12 +
+                keyboardHeight
+            ) + "px";
+
+
+        if(
+            attachMenu.classList.contains(
+                "open"
+            )
+        ){
+
+            positionAttachMenu();
+
+        }
+
+    }
+
+    else{
+
+        bar.style.top =
+            "auto";
+
+
+        bar.style.bottom =
+            "0";
+
+    }
+
+}
+
+
+/* =====================================================
+   VISUAL VIEWPORT
+===================================================== */
+
+if(
+    window.visualViewport
+){
+
+    window.visualViewport.addEventListener(
+        "resize",
+        function(){
+
+            fixKeyboardBar();
+
+        }
+    );
+
+
+    window.visualViewport.addEventListener(
+        "scroll",
+        function(){
+
+            fixKeyboardBar();
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   INPUT FOCUS
+===================================================== */
+
+messageInput.addEventListener(
+    "focus",
+    function(){
+
+        setTimeout(
+            fixKeyboardBar,
+            50
+        );
+
+
+        setTimeout(
+            fixKeyboardBar,
+            200
+        );
+
+
+        setTimeout(
+            fixKeyboardBar,
+            500
+        );
+
+
+        setTimeout(
+            scrollBottom,
+            500
+        );
+
+    }
+);
+
+
+/* =====================================================
+   INPUT BLUR
+===================================================== */
+
+messageInput.addEventListener(
+    "blur",
+    function(){
+
+        setTimeout(
+            fixKeyboardBar,
+            100
+        );
+
+    }
+);
+
+
+/* =====================================================
+   WINDOW RESIZE
+===================================================== */
+
+window.addEventListener(
+    "resize",
+    function(){
+
+        setTimeout(
+            fixKeyboardBar,
+            50
+        );
+
+    }
+);
+
+
+/* =====================================================
+   INITIAL
+===================================================== */
+
+setTimeout(
+    fixKeyboardBar,
+    100
+);
+
+
+setTimeout(
+    fixKeyboardBar,
+    500
+);
+
+</script>
+
+</body>
+
+</html>
