@@ -33,11 +33,13 @@
 body{
   width:100%;
   height:100vh;
+  min-height:100vh;
   background:#000;
   color:#fff;
   display:flex;
   flex-direction:column;
   overflow:hidden;
+  position:relative;
 }
 
 
@@ -130,9 +132,13 @@ body{
 
 .chat{
   flex:1;
+  min-height:0;
 
+  width:100%;
+  
   overflow-y:auto;
-
+  overflow-x:hidden;
+  
   padding:10px 12px 12px;
 
   background:#080808;
@@ -324,8 +330,14 @@ body{
 ============================== */
 
 .bottom{
-  min-height:70px;
+  width:100%;
 
+  height:70px;
+  min-height:70px;
+  max-height:70px;
+
+  flex-shrink:0;
+  
   background:#0d0d0d;
 
   border-top:1px solid #292929;
@@ -336,6 +348,10 @@ body{
   gap:8px;
 
   padding:9px 10px;
+  
+  position:relative;
+
+  z-index:20;
 }
 
 
