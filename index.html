@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>VirtualChat</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+html,
+body{
+  width:100%;
+  min-height:100%;
+}
+
+body{
+  min-height:100vh;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.card{
+  width:100%;
+  max-width:400px;
+  background:#fff;
+  border-radius:28px;
+  padding:38px 28px 28px;
+  box-shadow:
+    0 25px 70px rgba(0,0,0,.85),
+    0 0 35px rgba(0,174,255,.15);
+}
+
+h1{
+  text-align:center;
+  color:#111;
+  font-size:32px;
+  margin-bottom:10px;
+}
+
+.subtitle{
+  text-align:center;
+  color:#777;
+  font-size:14px;
+  line-height:1.5;
+  margin-bottom:30px;
+}
+
+.input-box{
+  margin-bottom:16px;
+}
+
+.input-box label{
+  display:block;
+  color:#333;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+input{
+  width:100%;
+  height:53px;
+  border:1px solid #ddd;
+  border-radius:14px;
+  background:#f7f7f7;
+  padding:0 15px;
+  outline:none;
+  font-size:14px;
+  color:#111;
+  transition:.2s;
+}
+
+input::placeholder{
+  color:#aaa;
+}
+
+input:focus{
+  border-color:#00aaff;
+  background:#fff;
+  box-shadow:
+    0 0 0 3px rgba(0,170,255,.1);
+}
+
+.forgot{
+  text-align:right;
+  margin:-1px 2px 20px;
+}
+
+.forgot a{
+  color:#008cff;
+  text-decoration:none;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.main-btn{
+  width:100%;
+  height:54px;
+  border:0;
+  border-radius:15px;
+  background:
+    linear-gradient(
+      135deg,
+      #00bfff,
+      #006cff
+    );
+  color:#fff;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:
+    0 10px 22px rgba(0,119,255,.25);
+  transition:.2s;
+}
+
+.main-btn:hover{
+  transform:translateY(-1px);
+}
+
+.main-btn:active{
+  transform:scale(.98);
+}
+
+.main-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.divider{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:26px 0;
+  color:#aaa;
+  font-size:12px;
+}
+
+.divider::before,
+.divider::after{
+  content:"";
+  height:1px;
+  background:#e5e5e5;
+  flex:1;
+}
+
+.switch-text{
+  text-align:center;
+  color:#777;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.switch-text span{
+  color:#008cff;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.message{
+  text-align:center;
+  font-size:13px;
+  margin-top:16px;
+  min-height:20px;
+  line-height:1.45;
+  word-break:break-word;
+}
+
+.footer{
+  text-align:center;
+  margin-top:22px;
+  color:#aaa;
+  font-size:11px;
+}
+
+.hidden{
+  display:none;
+}
+
+.loading{
+  opacity:.7;
+}
+
+@media(max-width:420px){
+
+  body{
+    padding:12px;
+  }
+
+  .card{
+    padding:34px 22px 27px;
+    border-radius:25px;
+  }
+
+  h1{
+    font-size:29px;
+  }
+
+}
+
+  </style>
+  </head>
+
+<body>
+
+<div class="card">
+
+  <!-- ============================= -->
+  <!-- LOGIN PAGE -->
+  <!-- ============================= -->
+
+  <div id="loginPage">
+
+    <h1>VirtualChat</h1>
+
+    <p class="subtitle">
+      Log in to continue to your VirtualChat account.
+    </p>
+
+
+    <div class="input-box">
+
+      <label for="loginUsername">
+        Username
+      </label>
+
+      <input
+        type="text"
+        id="loginUsername"
+        placeholder="Enter your username"
+        autocomplete="username"
+        spellcheck="false"
+      >
+
+    </div>
+
+
+    <div class="input-box">
+
+      <label for="loginPassword">
+        Password
+      </label>
+
+      <input
+        type="password"
+        id="loginPassword"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+      >
+
+    </div>
+
+
+    <div class="forgot">
+
+      <a
+        href="#"
+        id="forgotPassword"
+      >
+        Forgot password?
+      </a>
+
+    </div>
+
+
+    <button
+      class="main-btn"
+      id="loginBtn"
+      type="button"
+    >
+      Log In
+    </button>
+
+
+    <div class="divider">
+      OR
+    </div>
+
+
+    <div class="switch-text">
+
+      Don't have an account?
+
+      <span id="showCreate">
+        Create Account
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- ============================= -->
+  <!-- CREATE ACCOUNT PAGE -->
+  <!-- ============================= -->
+
+  <div
+    id="createPage"
+    class="hidden"
+  >
+
+    <h1>Create Account</h1>
+
+    <p class="subtitle">
+      Create your VirtualChat account and get started.
+    </p>
+
+
+    <div class="input-box">
+
+      <label for="createEmail">
+        Email
+      </label>
+
+      <input
+        type="email"
+        id="createEmail"
+        placeholder="Enter your email"
+        autocomplete="email"
+      >
+
+    </div>
+
+
+    <div class="input-box">
+
+      <label for="createUsername">
+        Username
+      </label>
+
+      <input
+        type="text"
+        id="createUsername"
+        placeholder="Choose a username"
+        autocomplete="username"
+        spellcheck="false"
+      >
+
+    </div>
+
+
+    <div class="input-box">
+
+      <label for="createPassword">
+        Password
+      </label>
+
+      <input
+        type="password"
+        id="createPassword"
+        placeholder="Create a password"
+        autocomplete="new-password"
+      >
+
+    </div>
+
+
+    <div class="input-box">
+
+      <label for="confirmPassword">
+        Confirm Password
+      </label>
+
+      <input
+        type="password"
+        id="confirmPassword"
+        placeholder="Confirm your password"
+        autocomplete="new-password"
+      >
+
+    </div>
+
+
+    <button
+      class="main-btn"
+      id="createBtn"
+      type="button"
+    >
+      Create Account
+    </button>
+
+
+    <div class="divider">
+      OR
+    </div>
+
+
+    <div class="switch-text">
+
+      Already have an account?
+
+      <span id="showLogin">
+        Log In
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <!-- ============================= -->
+  <!-- MESSAGE -->
+  <!-- ============================= -->
+
+  <div
+    class="message"
+    id="message"
+  ></div>
+
+
+  <div class="footer">
+    © 2026 VirtualChat
+  </div>
+
+</div>
+<script type="module">
+
+/* =========================================
+   FIREBASE IMPORTS
+========================================= */
+
+import {
+  initializeApp
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  setDoc,
+  serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+/* =========================================
+   FIREBASE CONFIG
+========================================= */
+
+const firebaseConfig = {
+
+  apiKey:
+    "AIzaSyDCeUtuKciz8z3C0x__AEZeHv8X4Y9ClFU",
+
+  authDomain:
+    "virtualchat-1213.firebaseapp.com",
+
+  projectId:
+    "virtualchat-1213",
+
+  storageBucket:
+    "virtualchat-1213.firebasestorage.app",
+
+  messagingSenderId:
+    "10737514662",
+
+  appId:
+    "1:10737514662:web:7d418df0cf4f441d275c67",
+
+  measurementId:
+    "G-8WVST7HH7D"
+};
+
+
+/* =========================================
+   INITIALIZE FIREBASE
+========================================= */
+
+const app =
+  initializeApp(firebaseConfig);
+
+const auth =
+  getAuth(app);
+
+const db =
+  getFirestore(app);
+
+
+/* =========================================
+   LOGIN PERSISTENCE
+========================================= */
+
+try{
+
+  await setPersistence(
+    auth,
+    browserLocalPersistence
+  );
+
+}catch(error){
+
+  console.error(
+    "Persistence error:",
+    error
+  );
+
+}
+
+
+/* =========================================
+   ADMIN ACCOUNT
+========================================= */
+
+const ADMIN_USERNAME =
+  "Hacker200595";
+
+const ADMIN_EMAIL =
+  "mdhacker8772@gmail.com";
+
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const loginPage =
+  document.getElementById(
+    "loginPage"
+  );
+
+const createPage =
+  document.getElementById(
+    "createPage"
+  );
+
+const message =
+  document.getElementById(
+    "message"
+  );
+
+const loginBtn =
+  document.getElementById(
+    "loginBtn"
+  );
+
+const createBtn =
+  document.getElementById(
+    "createBtn"
+  );
+
+const loginUsername =
+  document.getElementById(
+    "loginUsername"
+  );
+
+const loginPassword =
+  document.getElementById(
+    "loginPassword"
+  );
+
+const createEmail =
+  document.getElementById(
+    "createEmail"
+  );
+
+const createUsername =
+  document.getElementById(
+    "createUsername"
+  );
+
+const createPassword =
+  document.getElementById(
+    "createPassword"
+  );
+
+const confirmPassword =
+  document.getElementById(
+    "confirmPassword"
+  );
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+function showMessage(
+  text,
+  color="#008cff"
+){
+
+  message.textContent =
+    text;
+
+  message.style.color =
+    color;
+
+}
+
+
+/* =========================================
+   BUTTON LOADING
+========================================= */
+
+function setLoginLoading(
+  loading
+){
+
+  loginBtn.disabled =
+    loading;
+
+  loginBtn.textContent =
+    loading
+      ? "Logging in..."
+      : "Log In";
+
+}
+
+
+function setCreateLoading(
+  loading
+){
+
+  createBtn.disabled =
+    loading;
+
+  createBtn.textContent =
+    loading
+      ? "Creating..."
+      : "Create Account";
+
+}
+
+
+/* =========================================
+   SWITCH TO CREATE
+========================================= */
+
+document
+  .getElementById("showCreate")
+  .onclick = () => {
+
+    loginPage.classList.add(
+      "hidden"
+    );
+
+    createPage.classList.remove(
+      "hidden"
+    );
+
+    showMessage("");
+
+  };
+
+
+/* =========================================
+   SWITCH TO LOGIN
+========================================= */
+
+document
+  .getElementById("showLogin")
+  .onclick = () => {
+
+    createPage.classList.add(
+      "hidden"
+    );
+
+    loginPage.classList.remove(
+      "hidden"
+    );
+
+    showMessage("");
+
+  };
+
+
+/* =========================================
+   CREATE ACCOUNT
+========================================= */
+
+createBtn.onclick =
+  async () => {
+
+    const email =
+      createEmail.value.trim();
+
+    const username =
+      createUsername.value.trim();
+
+    const password =
+      createPassword.value;
+
+    const confirm =
+      confirmPassword.value;
+
+
+    if(
+      !email ||
+      !username ||
+      !password ||
+      !confirm
+    ){
+
+      showMessage(
+        "Please fill in all fields.",
+        "#ff3333"
+      );
+
+      return;
+    }
+
+
+    if(
+      username.length < 3
+    ){
+
+      showMessage(
+        "Username must be at least 3 characters.",
+        "#ff3333"
+      );
+
+      return;
+    }
+
+
+    if(
+      !/^[a-zA-Z0-9_]+$/.test(username)
+    ){
+
+      showMessage(
+        "Username can contain only letters, numbers and underscore.",
+        "#ff3333"
+      );
+
+      return;
+    }
+
+
+    if(
+      password.length < 6
+    ){
+
+      showMessage(
+        "Password must be at least 6 characters.",
+        "#ff3333"
+      );
+
+      return;
+    }
+
+
+    if(
+      password !== confirm
+    ){
+
+      showMessage(
+        "Passwords do not match.",
+        "#ff3333"
+      );
+
+      return;
+    }
+
+
+    if(
+      username.toLowerCase() ===
+      ADMIN_USERNAME.toLowerCase()
+    ){
+
+      showMessage(
+        "This username is reserved.",
+        "#ff3333"
+      );
+
+      return;
+    }
+
+
+    try{
+
+      setCreateLoading(true);
+
+      showMessage(
+        "Checking username..."
+      );
+
+
+      /* =====================================
+         CHECK USERNAME
+      ===================================== */
+
+      const usernameQuery =
+        query(
+          collection(db,"users"),
+          where(
+            "username",
+            "==",
+            username
+          )
+        );
+
+
+      const usernameResult =
+        await getDocs(
+          usernameQuery
+        );
+
+
+      if(
+        !usernameResult.empty
+      ){
+
+        showMessage(
+          "Username is already taken.",
+          "#ff3333"
+        );
+
+        return;
+      }
+
+
+      /* =====================================
+         CREATE AUTH ACCOUNT
+      ===================================== */
+
+      showMessage(
+        "Creating account..."
+      );
+
+
+      const credential =
+        await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+
+      const user =
+        credential.user;
+
+
+      /* =====================================
+         CREATE FIRESTORE USER DOCUMENT
+      ===================================== */
+
+      await setDoc(
+        doc(
+          db,
+          "users",
+          user.uid
+        ),
+        {
+
+          uid:
+            user.uid,
+
+          username:
+            username,
+
+          email:
+            email,
+
+          role:
+            "user",
+
+          createdAt:
+            serverTimestamp()
+
+        }
+      );
+
+
+      showMessage(
+        "Account created successfully.",
+        "#00aa55"
+      );
+
+
+      setTimeout(
+        () => {
+
+          window.location.replace(
+            "chat.html"
+          );
+
+        },
+        700
+      );
+
+
+    }catch(error){
+
+      console.error(
+        "CREATE ACCOUNT ERROR:",
+        error
+      );
+
+
+      if(
+        error.code ===
+        "auth/email-already-in-use"
+      ){
+
+        showMessage(
+          "This email is already registered.",
+          "#ff3333"
+        );
+
+      }
+
+      else if(
+        error.code ===
+        "auth/invalid-email"
+      ){
+
+        showMessage(
+          "Invalid email address.",
+          "#ff3333"
+        );
+
+      }
+
+      else if(
+        error.code ===
+        "auth/weak-password"
+      ){
+
+        showMessage(
+          "Password is too weak.",
+          "#ff3333"
+        );
+
+      }
+
+      else if(
+        error.code ===
+        "permission-denied"
+      ){
+
+        showMessage(
+          "Firestore permission denied. Check your Firebase Rules.",
+          "#ff3333"
+        );
+
+      }
+
+      else{
+
+        showMessage(
+          error.message ||
+          "Could not create account.",
+          "#ff3333"
+        );
+
+      }
+
+    }
+
+    finally{
+
+      setCreateLoading(false);
+
+    }
+
+  };
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+loginBtn.onclick =
+  async () => {
+
+    const username =
+      loginUsername.value.trim();
+
+    const password =
+      loginPassword.value;
+
+
+    if(
+      !username ||
+      !password
+    ){
+
+      showMessage(
+        "Please enter username and password.",
+        "#ff3333"
+      );
+
+      return;
+    }
+
+
+    try{
+
+      setLoginLoading(true);
+
+      showMessage(
+        "Logging in..."
+      );
+
+
+      /* =====================================
+         ADMIN LOGIN
+         
+         IMPORTANT:
+         Admin login uses Firebase Auth
+         directly with ADMIN_EMAIL.
+         
+         It does NOT search Firestore
+         for the admin username first.
+      ===================================== */
+
+      if(
+        username.toLowerCase() ===
+        ADMIN_USERNAME.toLowerCase()
+      ){
+
+        try{
+
+          const adminCredential =
+            await signInWithEmailAndPassword(
+              auth,
+              ADMIN_EMAIL,
+              password
+            );
+
+
+          console.log(
+            "Admin Auth UID:",
+            adminCredential.user.uid
+          );
+
+
+          showMessage(
+            "Admin login successful.",
+            "#00aa55"
+          );
+
+
+          setTimeout(
+            () => {
+
+              window.location.replace(
+                "admin.html"
+              );
+
+            },
+            500
+          );
+
+
+          return;
+
+        }catch(adminError){
+
+          console.error(
+            "ADMIN LOGIN ERROR:",
+            adminError
+          );
+
+
+          if(
+            adminError.code ===
+              "auth/invalid-credential" ||
+            adminError.code ===
+              "auth/invalid-login-credentials"
+          ){
+
+            showMessage(
+              "Wrong admin username or password.",
+              "#ff3333"
+            );
+
+          }
+
+          else if(
+            adminError.code ===
+            "auth/user-not-found"
+          ){
+
+            showMessage(
+              "Admin Firebase account was not found.",
+              "#ff3333"
+            );
+
+          }
+
+          else if(
+            adminError.code ===
+            "auth/wrong-password"
+          ){
+
+            showMessage(
+              "Wrong admin password.",
+              "#ff3333"
+            );
+
+          }
+
+          else{
+
+            showMessage(
+              "Admin login failed: "+
+              (
+                adminError.message ||
+                "Unknown error"
+              ),
+              "#ff3333"
+            );
+
+          }
+
+          return;
+        }
+
+      }
+
+
+      /* =====================================
+         NORMAL USER LOGIN
+      ===================================== */
+
+      showMessage(
+        "Finding username..."
+      );
+
+
+      const userQuery =
+        query(
+          collection(db,"users"),
+          where(
+            "username",
+            "==",
+            username
+          )
+        );
+
+
+      const result =
+        await getDocs(
+          userQuery
+        );
+
+
+      if(
+        result.empty
+      ){
+
+        showMessage(
+          "Username not found.",
+          "#ff3333"
+        );
+
+        return;
+      }
+
+
+      const userData =
+        result.docs[0].data();
+
+
+      const userEmail =
+        userData.email ||
+        userData.Email ||
+        "";
+
+
+      if(!userEmail){
+
+        showMessage(
+          "This user account has no email address.",
+          "#ff3333"
+        );
+
+        return;
+      }
+
+
+      showMessage(
+        "Checking password..."
+      );
+
+
+      const userCredential =
+        await signInWithEmailAndPassword(
+          auth,
+          userEmail,
+          password
+        );
+
+
+      console.log(
+        "User Auth UID:",
+        userCredential.user.uid
+      );
+
+
+      showMessage(
+        "Login successful.",
+        "#00aa55"
+      );
+
+
+      setTimeout(
+        () => {
+
+          window.location.replace(
+            "chat.html"
+          );
+
+        },
+        500
+      );
+
+
+    }catch(error){
+
+      console.error(
+        "LOGIN ERROR:",
+        error
+      );
+
+
+      if(
+        error.code ===
+          "auth/invalid-credential" ||
+        error.code ===
+          "auth/invalid-login-credentials"
+      ){
+
+        showMessage(
+          "Wrong username or password.",
+          "#ff3333"
+        );
+
+      }
+
+      else if(
+        error.code ===
+        "auth/user-not-found"
+      ){
+
+        showMessage(
+          "Account not found.",
+          "#ff3333"
+        );
+
+      }
+
+      else if(
+        error.code ===
+        "auth/wrong-password"
+      ){
+
+        showMessage(
+          "Wrong password.",
+          "#ff3333"
+        );
+
+      }
+
+      else if(
+        error.code ===
+        "permission-denied"
+      ){
+
+        showMessage(
+          "Firestore permission denied. Check your Firebase Rules.",
+          "#ff3333"
+        );
+
+      }
+
+      else{
+
+        showMessage(
+          error.message ||
+          "Login failed.",
+          "#ff3333"
+        );
+
+      }
+
+    }
+
+    finally{
+
+      setLoginLoading(false);
+
+    }
+
+  };
+
+
+/* =========================================
+   FORGOT PASSWORD
+========================================= */
+
+document
+  .getElementById("forgotPassword")
+  .onclick =
+  async (event) => {
+
+    event.preventDefault();
+
+
+    const username =
+      loginUsername.value.trim();
+
+
+    if(!username){
+
+      showMessage(
+        "Enter your username first.",
+        "#ff3333"
+      );
+
+      loginUsername.focus();
+
+      return;
+    }
+
+
+    try{
+
+      showMessage(
+        "Finding account..."
+      );
+
+
+      let email = "";
+
+
+      /* =====================================
+         ADMIN PASSWORD RESET
+      ===================================== */
+
+      if(
+        username.toLowerCase() ===
+        ADMIN_USERNAME.toLowerCase()
+      ){
+
+        email =
+          ADMIN_EMAIL;
+
+      }
+
+      else{
+
+        /* ===================================
+           USER PASSWORD RESET
+        =================================== */
+
+        const userQuery =
+          query(
+            collection(db,"users"),
+            where(
+              "username",
+              "==",
+              username
+            )
+          );
+
+
+        const result =
+          await getDocs(
+            userQuery
+          );
+
+
+        if(
+          !result.empty
+        ){
+
+          const data =
+            result.docs[0].data();
+
+
+          email =
+            data.email ||
+            data.Email ||
+            "";
+
+        }
+
+      }
+
+
+      if(!email){
+
+        showMessage(
+          "Username not found.",
+          "#ff3333"
+        );
+
+        return;
+      }
+
+
+      showMessage(
+        "Sending password reset email..."
+      );
+
+
+      await sendPasswordResetEmail(
+        auth,
+        email
+      );
+
+
+      showMessage(
+        "Password reset email sent. Check your email inbox.",
+        "#00aa55"
+      );
+
+
+    }catch(error){
+
+      console.error(
+        "PASSWORD RESET ERROR:",
+        error
+      );
+
+
+      if(
+        error.code ===
+        "auth/user-not-found"
+      ){
+
+        showMessage(
+          "No Firebase account was found for this username.",
+          "#ff3333"
+        );
+
+      }
+
+      else if(
+        error.code ===
+        "auth/invalid-email"
+      ){
+
+        showMessage(
+          "The account email address is invalid.",
+          "#ff3333"
+        );
+
+      }
+
+      else if(
+        error.code ===
+        "permission-denied"
+      ){
+
+        showMessage(
+          "Firestore permission denied. Check Firebase Rules.",
+          "#ff3333"
+        );
+
+      }
+
+      else{
+
+        showMessage(
+          error.message ||
+          "Could not send password reset email.",
+          "#ff3333"
+        );
+
+      }
+
+    }
+
+  };
+
+
+/* =========================================
+   ENTER KEY LOGIN
+========================================= */
+
+loginPassword.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key === "Enter"
+    ){
+
+      event.preventDefault();
+
+      loginBtn.click();
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   ENTER KEY CREATE ACCOUNT
+========================================= */
+
+confirmPassword.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key === "Enter"
+    ){
+
+      event.preventDefault();
+
+      createBtn.click();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>

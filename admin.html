@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VirtualChat Admin</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial,Helvetica,sans-serif
+}
+
+html,body{
+  width:100%;
+  height:100%;
+}
+
+body{
+  background:#050505;
+  color:#fff;
+  overflow:hidden;
+}
+
+.app{
+  width:100%;
+  height:100vh;
+  display:flex;
+  background:#050505;
+}
+
+.sidebar{
+  width:350px;
+  height:100%;
+  background:#0c0c0c;
+  border-right:1px solid #252525;
+  display:flex;
+  flex-direction:column;
+  flex-shrink:0;
+}
+
+.top-header{
+  height:70px;
+  display:flex;
+  align-items:center;
+  padding:0 14px;
+  border-bottom:1px solid #242424;
+  flex-shrink:0;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:1;
+}
+
+.brand-logo,
+.welcome-logo,
+.chat-logo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#00bfff,#006cff);
+  color:#fff;
+  font-weight:bold;
+  box-shadow:0 7px 20px rgba(0,119,255,.25);
+}
+
+.brand-logo{
+  width:42px;
+  height:42px;
+  border-radius:13px;
+  font-size:17px;
+}
+
+.brand-name{
+  font-size:18px;
+  font-weight:bold;
+  color:#fff;
+}
+
+.brand-subtitle{
+  font-size:10px;
+  color:#666;
+  margin-top:3px;
+}
+
+.top-menu-btn{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:12px;
+  background:#171717;
+  color:#aaa;
+  font-size:23px;
+  cursor:pointer;
+}
+
+.top-menu-btn:hover{
+  background:#222;
+  color:#fff;
+}
+
+.search-area{
+  padding:12px;
+  border-bottom:1px solid #202020;
+}
+
+.search-box{
+  width:100%;
+  height:45px;
+  border-radius:13px;
+  border:1px solid #292929;
+  background:#151515;
+  color:#fff;
+  outline:none;
+  padding:0 14px;
+  font-size:13px;
+}
+
+.search-box::placeholder{
+  color:#666;
+}
+
+.search-box:focus{
+  border-color:#008cff;
+  background:#181818;
+}
+
+.user-list{
+  flex:1;
+  overflow-y:auto;
+  padding:7px;
+}
+
+.user-list::-webkit-scrollbar,
+.chat-body::-webkit-scrollbar{
+  width:5px;
+}
+
+.user-list::-webkit-scrollbar-thumb,
+.chat-body::-webkit-scrollbar-thumb{
+  background:#333;
+  border-radius:10px;
+}
+
+.user-card{
+  width:100%;
+  min-height:66px;
+  display:flex;
+  align-items:center;
+  padding:9px 8px;
+  border-radius:14px;
+  margin-bottom:4px;
+  background:transparent;
+  cursor:pointer;
+  transition:background .18s ease,transform .18s ease;
+}
+
+.user-card:hover{
+  background:#171717;
+}
+
+.user-card:active{
+  transform:scale(.99);
+}
+
+.avatar{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  background:linear-gradient(135deg,#00bfff,#006cff);
+  color:#fff;
+  font-size:16px;
+  font-weight:bold;
+}
+
+.user-info{
+  flex:1;
+  min-width:0;
+  padding-left:11px;
+}
+
+.username{
+  color:#eee;
+  font-size:14px;
+  font-weight:bold;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.user-menu-btn{
+  width:38px;
+  height:42px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:#777;
+  font-size:22px;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+.user-menu-btn:hover{
+  background:#222;
+  color:#fff;
+}
+
+.empty-box{
+  min-height:180px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+}
+
+.empty-title{
+  color:#aaa;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.empty-text{
+  color:#555;
+  font-size:11px;
+  margin-top:7px;
+  line-height:1.5;
+}
+
+.main{
+  flex:1;
+  height:100%;
+  position:relative;
+  background:#050505;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.welcome-area{
+  text-align:center;
+  padding:30px;
+}
+
+.welcome-logo{
+  width:70px;
+  height:70px;
+  margin:0 auto 18px;
+  border-radius:22px;
+  font-size:27px;
+}
+
+.welcome-title{
+  font-size:23px;
+  font-weight:bold;
+  color:#eee;
+}
+
+.welcome-text{
+  max-width:360px;
+  margin:9px auto 0;
+  color:#555;
+  font-size:12px;
+  line-height:1.6;
+}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:900;
+  display:none;
+}
+
+.overlay.show{
+  display:block;
+}
+
+.side-menu{
+  position:fixed;
+  top:0;
+  right:-290px;
+  width:275px;
+  height:100%;
+  background:#111;
+  border-left:1px solid #292929;
+  z-index:1000;
+  transition:right .25s ease;
+  padding:16px;
+}
+
+.side-menu.show{
+  right:0;
+}
+
+.menu-title{
+  font-size:18px;
+  font-weight:bold;
+  color:#fff;
+  padding:12px 8px 18px;
+  border-bottom:1px solid #252525;
+  margin-bottom:10px;
+}
+
+.menu-item{
+  width:100%;
+  height:48px;
+  border:0;
+  border-radius:12px;
+  background:transparent;
+  color:#ccc;
+  text-align:left;
+  padding:0 13px;
+  font-size:13px;
+  cursor:pointer;
+  margin-bottom:5px;
+}
+
+.menu-item:hover{
+  background:#202020;
+  color:#fff;
+}
+
+.menu-item.logout{
+  color:#ff6666;
+}
+
+.menu-item.logout:hover{
+  background:#261313;
+}
+
+.user-popup{
+  position:fixed;
+  width:185px;
+  background:#181818;
+  border:1px solid #303030;
+  border-radius:14px;
+  padding:6px;
+  z-index:1100;
+  display:none;
+  box-shadow:0 18px 45px rgba(0,0,0,.7);
+}
+
+.user-popup.show{
+  display:block;
+}
+
+.popup-item{
+  width:100%;
+  height:44px;
+  border:0;
+  background:transparent;
+  color:#ddd;
+  text-align:left;
+  padding:0 13px;
+  border-radius:9px;
+  cursor:pointer;
+  font-size:13px;
+}
+
+.popup-item:hover{
+  background:#252525;
+  color:#fff;
+}
+
+.popup-item.delete{
+  color:#ff6666;
+}
+
+.popup-item.delete:hover{
+  background:#281313;
+}
+
+.username-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.72);
+  z-index:1200;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.username-modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  max-width:360px;
+  background:#151515;
+  border:1px solid #303030;
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 25px 70px rgba(0,0,0,.8);
+}
+
+.modal-title{
+  color:#fff;
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:7px;
+}
+
+.modal-subtitle{
+  color:#666;
+  font-size:11px;
+  line-height:1.5;
+  margin-bottom:18px;
+}
+
+.modal-input{
+  width:100%;
+  height:48px;
+  background:#0d0d0d;
+  border:1px solid #303030;
+  border-radius:12px;
+  outline:none;
+  color:#fff;
+  padding:0 13px;
+  font-size:13px;
+}
+
+.modal-input:focus{
+  border-color:#008cff;
+}
+
+.modal-buttons{
+  display:flex;
+  gap:9px;
+  margin-top:16px;
+}
+
+.modal-btn{
+  flex:1;
+  height:45px;
+  border:0;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.cancel-btn{
+  background:#242424;
+  color:#bbb;
+}
+
+.cancel-btn:hover{
+  background:#2d2d2d;
+}
+
+.save-btn{
+  background:linear-gradient(135deg,#00bfff,#006cff);
+  color:#fff;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:25px;
+  transform:translate(-50%,20px);
+  background:#202020;
+  border:1px solid #333;
+  color:#eee;
+  padding:11px 17px;
+  border-radius:12px;
+  font-size:12px;
+  z-index:2000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+.chat-page{
+  position:fixed;
+  inset:0;
+  background:#050505;
+  z-index:500;
+  display:none;
+  flex-direction:column;
+}
+
+.chat-page.show{
+  display:flex;
+}
+
+.chat-header{
+  height:68px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  background:#0d0d0d;
+  border-bottom:1px solid #252525;
+}
+
+.chat-back{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:11px;
+  background:#181818;
+  color:#aaa;
+  font-size:25px;
+  cursor:pointer;
+  margin-right:8px;
+}
+
+.chat-back:hover{
+  background:#222;
+  color:#fff;
+}
+
+.chat-logo{
+  width:41px;
+  height:41px;
+  flex-shrink:0;
+  border-radius:50%;
+  font-size:16px;
+  margin-right:10px;
+}
+
+.chat-user-name{
+  flex:1;
+  min-width:0;
+}
+
+#chatUsername{
+  color:#fff;
+  font-size:15px;
+  font-weight:bold;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.chat-user-status{
+  color:#666;
+  font-size:10px;
+  margin-top:3px;
+}
+
+.chat-menu-btn{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:11px;
+  background:#181818;
+  color:#aaa;
+  font-size:23px;
+  cursor:pointer;
+}
+
+.chat-menu-btn:hover{
+  background:#222;
+  color:#fff;
+}
+
+.chat-body{
+  flex:1;
+  overflow-y:auto;
+  padding:10px 12px;
+  background-color:#080808;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
+
+.message-row{
+  width:100%;
+  display:flex;
+  margin:3px 0;
+}
+
+.message-row.user{
+  justify-content:flex-start;
+}
+
+.message-row.admin{
+  justify-content:flex-end;
+}
+
+.message-bubble{
+  display:inline-block;
+  width:auto;
+  max-width:75%;
+  padding:7px 9px 5px;
+  border-radius:8px;
+  font-size:15px;
+  line-height:1.35;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+  white-space:pre-wrap;
+}
+
+.message-row.user .message-bubble{
+  background:#181818;
+  border:1px solid #292929;
+  color:#eee;
+  border-radius:8px 8px 8px 2px;
+}
+
+.message-row.admin .message-bubble{
+  background:linear-gradient(135deg,#008cff,#0061d8);
+  color:#fff;
+  border-radius:8px 8px 2px 8px;
+}
+
+.message-time{
+  display:block;
+  text-align:right;
+  margin-top:3px;
+  margin-left:25px;
+  font-size:9px;
+  line-height:10px;
+  color:rgba(255,255,255,.55);
+}
+
+.empty-messages{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#666;
+  font-size:12px;
+}
+
+.chat-input-area{
+  min-height:66px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 11px;
+  background:#0d0d0d;
+  border-top:1px solid #252525;
+}
+
+.chat-input{
+  flex:1;
+  min-width:0;
+  height:47px;
+  border:1px solid #292929;
+  border-radius:14px;
+  outline:none;
+  background:#181818;
+  color:#fff;
+  padding:0 14px;
+  font-size:13px;
+}
+
+.chat-input::placeholder{
+  color:#666;
+}
+
+.chat-input:focus{
+  border-color:#008cff;
+}
+
+.chat-send{
+  width:48px;
+  height:47px;
+  flex-shrink:0;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(135deg,#00bfff,#006cff);
+  color:#fff;
+  font-size:18px;
+  cursor:pointer;
+}
+
+.chat-send:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+.chat-menu{
+  position:fixed;
+  top:58px;
+  right:12px;
+  width:180px;
+  background:#181818;
+  border:1px solid #303030;
+  border-radius:14px;
+  padding:6px;
+  box-shadow:0 18px 45px rgba(0,0,0,.75);
+  z-index:700;
+  display:none;
+}
+
+.chat-menu.show{
+  display:block;
+}
+
+.chat-menu-item{
+  width:100%;
+  height:45px;
+  border:0;
+  border-radius:9px;
+  background:transparent;
+  color:#ddd;
+  text-align:left;
+  padding:0 13px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.chat-menu-item:hover{
+  background:#252525;
+  color:#fff;
+}
+
+.wallpaper-input{
+  display:none;
+}
+
+@media(max-width:700px){
+
+  .sidebar{
+    width:100%;
+  }
+
+  .main{
+    display:none;
+  }
+
+  .chat-page{
+    width:100%;
+  }
+
+  .message-bubble{
+    max-width:84%;
+  }
+
+}
+
+@media(max-width:420px){
+
+  .top-header{
+    height:65px;
+  }
+
+  .user-card{
+    min-height:64px;
+  }
+
+  .avatar{
+    width:43px;
+    height:43px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar">
+
+<div class="top-header">
+
+<div class="brand">
+
+<div class="brand-logo">V</div>
+
+<div>
+
+<div class="brand-name">
+VirtualChat
+</div>
+
+<div class="brand-subtitle">
+Admin Panel
+</div>
+
+</div>
+
+</div>
+
+<button
+class="top-menu-btn"
+id="topMenuBtn"
+type="button"
+>
+⋮
+</button>
+
+</div>
+
+
+<div class="search-area">
+
+<input
+class="search-box"
+id="searchInput"
+type="text"
+placeholder="Search users..."
+autocomplete="off"
+>
+
+</div>
+
+
+<div
+class="user-list"
+id="userList"
+>
+
+<div class="empty-box">
+
+<div class="empty-title">
+Loading users...
+</div>
+
+<div class="empty-text">
+Please wait
+</div>
+
+</div>
+
+</div>
+
+</aside>
+
+
+<main class="main">
+
+<div class="welcome-area">
+
+<div class="welcome-logo">
+V
+</div>
+
+<div class="welcome-title">
+VirtualChat
+</div>
+
+<div class="welcome-text">
+Select a user from the list to open their conversation.
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+
+<div
+class="overlay"
+id="overlay"
+></div>
+
+
+<div
+class="side-menu"
+id="sideMenu"
+>
+
+<div class="menu-title">
+Admin Menu
+</div>
+
+<button
+class="menu-item"
+id="refreshBtn"
+type="button"
+>
+Refresh Users
+</button>
+
+<button
+class="menu-item logout"
+id="logoutBtn"
+type="button"
+>
+Logout
+</button>
+
+</div>
+
+
+<div
+class="user-popup"
+id="userPopup"
+>
+
+<button
+class="popup-item"
+id="changeUsernameBtn"
+type="button"
+>
+Change Username
+</button>
+
+<button
+class="popup-item delete"
+id="deleteUserBtn"
+type="button"
+>
+Delete
+</button>
+
+</div>
+
+
+<div
+class="username-modal"
+id="usernameModal"
+>
+
+<div class="modal-box">
+
+<div class="modal-title">
+Change Username
+</div>
+
+<div class="modal-subtitle">
+Enter a new username for this user.
+</div>
+
+<input
+class="modal-input"
+id="newUsername"
+type="text"
+placeholder="Enter new username"
+autocomplete="off"
+>
+
+<div class="modal-buttons">
+
+<button
+class="modal-btn cancel-btn"
+id="cancelUsername"
+type="button"
+>
+Cancel
+</button>
+
+<button
+class="modal-btn save-btn"
+id="saveUsername"
+type="button"
+>
+Save
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div
+class="toast"
+id="toast"
+></div>
+
+
+<div
+class="chat-page"
+id="chatPage"
+>
+
+<div class="chat-header">
+
+<button
+class="chat-back"
+id="chatBack"
+type="button"
+>
+‹
+</button>
+
+<div
+class="chat-logo"
+id="chatLogo"
+>
+V
+</div>
+
+<div class="chat-user-name">
+
+<div id="chatUsername">
+User
+</div>
+
+<div class="chat-user-status">
+User
+</div>
+
+</div>
+
+<button
+class="chat-menu-btn"
+id="chatMenuBtn"
+type="button"
+>
+⋮
+</button>
+
+</div>
+
+
+<div
+class="chat-body"
+id="chatBody"
+>
+
+<div class="empty-messages">
+Select a user to start chatting.
+</div>
+
+</div>
+
+
+<div class="chat-input-area">
+
+<input
+class="chat-input"
+id="chatInput"
+type="text"
+placeholder="Type a message..."
+autocomplete="off"
+>
+
+<button
+class="chat-send"
+id="chatSend"
+type="button"
+>
+➤
+</button>
+
+</div>
+
+
+<div
+class="chat-menu"
+id="chatMenu"
+>
+
+<button
+class="chat-menu-item"
+id="wallpaperBtn"
+type="button"
+>
+Wallpaper
+</button>
+
+</div>
+
+
+<input
+type="file"
+id="wallpaperInput"
+class="wallpaper-input"
+accept="image/*"
+>
+
+</div>
+
+
+<script type="module">
+
+import {
+  initializeApp
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  addDoc,
+  query,
+  where,
+  onSnapshot,
+  doc,
+  updateDoc,
+  serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+const firebaseConfig={
+
+  apiKey:"AIzaSyDCeUtuKciz8z3C0x__AEZeHv8X4Y9ClFU",
+
+  authDomain:"virtualchat-1213.firebaseapp.com",
+
+  projectId:"virtualchat-1213",
+
+  storageBucket:"virtualchat-1213.firebasestorage.app",
+
+  messagingSenderId:"10737514662",
+
+  appId:"1:10737514662:web:7d418df0cf4f441d275c67",
+
+  measurementId:"G-8WVST7HH7D"
+
+};
+
+
+const app =
+  initializeApp(firebaseConfig);
+
+const auth =
+  getAuth(app);
+
+const db =
+  getFirestore(app);
+
+
+let allUsers=[];
+
+let selectedUser=null;
+
+let selectedChatUser=null;
+
+let unsubscribeMessages=null;
+
+let currentAdminUid=null;
+
+
+const userList =
+  document.getElementById("userList");
+
+const searchInput =
+  document.getElementById("searchInput");
+
+const userPopup =
+  document.getElementById("userPopup");
+
+const changeUsernameBtn =
+  document.getElementById("changeUsernameBtn");
+
+const deleteUserBtn =
+  document.getElementById("deleteUserBtn");
+
+const usernameModal =
+  document.getElementById("usernameModal");
+
+const newUsername =
+  document.getElementById("newUsername");
+
+const cancelUsername =
+  document.getElementById("cancelUsername");
+
+const saveUsername =
+  document.getElementById("saveUsername");
+
+const toast =
+  document.getElementById("toast");
+
+const sideMenu =
+  document.getElementById("sideMenu");
+
+const overlay =
+  document.getElementById("overlay");
+
+const topMenuBtn =
+  document.getElementById("topMenuBtn");
+
+const refreshBtn =
+  document.getElementById("refreshBtn");
+
+const logoutBtn =
+  document.getElementById("logoutBtn");
+
+
+const chatPage =
+  document.getElementById("chatPage");
+
+const chatBack =
+  document.getElementById("chatBack");
+
+const chatLogo =
+  document.getElementById("chatLogo");
+
+const chatUsername =
+  document.getElementById("chatUsername");
+
+const chatBody =
+  document.getElementById("chatBody");
+
+const chatInput =
+  document.getElementById("chatInput");
+
+const chatSend =
+  document.getElementById("chatSend");
+
+const chatMenuBtn =
+  document.getElementById("chatMenuBtn");
+
+const chatMenu =
+  document.getElementById("chatMenu");
+
+const wallpaperBtn =
+  document.getElementById("wallpaperBtn");
+
+const wallpaperInput =
+  document.getElementById("wallpaperInput");
+
+
+function showToast(text){
+
+  toast.textContent=text;
+
+  toast.classList.add("show");
+
+  setTimeout(
+    ()=>{
+      toast.classList.remove("show");
+    },
+    1800
+  );
+
+}
+
+
+function escapeHTML(value){
+
+  return String(value)
+
+    .replaceAll("&","&amp;")
+
+    .replaceAll("<","&lt;")
+
+    .replaceAll(">","&gt;")
+
+    .replaceAll('"',"&quot;")
+
+    .replaceAll("'","&#039;");
+
+}
+
+
+function getUsername(data){
+
+  return (
+    data.username ||
+    data.Username ||
+    "User"
+  );
+
+}
+
+
+function getRole(data){
+
+  return String(
+    data.role ||
+    data.Role ||
+    ""
+  )
+  .toLowerCase()
+  .trim();
+
+}
+
+
+function getAvatar(name){
+
+  return name
+    ? name.charAt(0).toUpperCase()
+    : "U";
+
+}
+
+
+function getMessageTime(timestamp){
+
+  if(
+    !timestamp ||
+    !timestamp.toDate
+  ){
+    return "";
+  }
+
+
+  return timestamp
+    .toDate()
+    .toLocaleTimeString(
+      [],
+      {
+        hour:"2-digit",
+        minute:"2-digit"
+      }
+    );
+
+}
+// =====================================
+// LOAD USERS
+// =====================================
+
+async function loadUsers(){
+
+  userList.innerHTML = `
+    <div class="empty-box">
+      <div class="empty-title">Loading users...</div>
+      <div class="empty-text">Please wait</div>
+    </div>
+  `;
+
+  try{
+
+    const snapshot =
+      await getDocs(
+        collection(db,"users")
+      );
+
+    const users = [];
+
+    snapshot.forEach(userDoc => {
+
+      const data =
+        userDoc.data();
+
+      if(getRole(data) !== "user"){
+        return;
+      }
+
+      users.push({
+
+        documentId:userDoc.id,
+
+        uid:data.uid || userDoc.id,
+
+        username:getUsername(data)
+
+      });
+
+    });
+
+    allUsers = users;
+
+    renderUsers(allUsers);
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    userList.innerHTML = `
+      <div class="empty-box">
+        <div class="empty-title">
+          Could not load users
+        </div>
+
+        <div class="empty-text">
+          ${escapeHTML(error.message)}
+        </div>
+      </div>
+    `;
+
+  }
+
+}
+
+
+// =====================================
+// RENDER USERS
+// =====================================
+
+function renderUsers(users){
+
+  userList.innerHTML = "";
+
+  if(!users.length){
+
+    userList.innerHTML = `
+      <div class="empty-box">
+
+        <div class="empty-title">
+          No users found
+        </div>
+
+        <div class="empty-text">
+          No user account is available.
+        </div>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  users.forEach(user => {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "user-card";
+
+
+    card.innerHTML = `
+
+      <div class="avatar">
+        ${escapeHTML(
+          getAvatar(user.username)
+        )}
+      </div>
+
+      <div class="user-info">
+
+        <div class="username">
+          ${escapeHTML(user.username)}
+        </div>
+
+      </div>
+
+      <button
+        class="user-menu-btn"
+        type="button"
+      >
+        ⋮
+      </button>
+
+    `;
+
+
+    card.querySelector(
+      ".user-info"
+    ).onclick = () => {
+
+      openChat(user);
+
+    };
+
+
+    card.querySelector(
+      ".user-menu-btn"
+    ).onclick = event => {
+
+      event.stopPropagation();
+
+      selectedUser = user;
+
+      openUserPopup(
+        event.currentTarget
+      );
+
+    };
+
+
+    userList.appendChild(card);
+
+  });
+
+}
+
+
+// =====================================
+// SEARCH USERS
+// =====================================
+
+searchInput.oninput = () => {
+
+  const text =
+    searchInput.value
+      .trim()
+      .toLowerCase();
+
+
+  if(!text){
+
+    renderUsers(allUsers);
+
+    return;
+
+  }
+
+
+  const filtered =
+    allUsers.filter(user =>
+
+      user.username
+        .toLowerCase()
+        .includes(text)
+
+    );
+
+
+  renderUsers(filtered);
+
+};
+
+
+// =====================================
+// USER POPUP
+// =====================================
+
+function openUserPopup(button){
+
+  userPopup.classList.add(
+    "show"
+  );
+
+
+  const rect =
+    button.getBoundingClientRect();
+
+
+  let left =
+    rect.right - 185;
+
+
+  let top =
+    rect.bottom + 5;
+
+
+  if(left < 8){
+    left = 8;
+  }
+
+
+  if(
+    left + 185 >
+    window.innerWidth - 8
+  ){
+
+    left =
+      window.innerWidth - 193;
+
+  }
+
+
+  if(
+    top + 100 >
+    window.innerHeight
+  ){
+
+    top =
+      rect.top - 105;
+
+  }
+
+
+  userPopup.style.left =
+    left + "px";
+
+
+  userPopup.style.top =
+    top + "px";
+
+}
+
+
+function closeUserPopup(){
+
+  userPopup.classList.remove(
+    "show"
+  );
+
+}
+
+
+// =====================================
+// CHANGE USERNAME
+// =====================================
+
+changeUsernameBtn.onclick = () => {
+
+  closeUserPopup();
+
+
+  if(!selectedUser){
+    return;
+  }
+
+
+  newUsername.value =
+    selectedUser.username;
+
+
+  usernameModal.classList.add(
+    "show"
+  );
+
+
+  setTimeout(() => {
+
+    newUsername.focus();
+
+    newUsername.select();
+
+  },100);
+
+};
+
+
+// =====================================
+// CANCEL USERNAME
+// =====================================
+
+cancelUsername.onclick = () => {
+
+  usernameModal.classList.remove(
+    "show"
+  );
+
+  selectedUser = null;
+
+};
+
+
+// =====================================
+// SAVE USERNAME
+// =====================================
+
+saveUsername.onclick =
+  async () => {
+
+    if(!selectedUser){
+      return;
+    }
+
+
+    const name =
+      newUsername.value.trim();
+
+
+    if(name.length < 3){
+
+      showToast(
+        "Username must be at least 3 characters"
+      );
+
+      return;
+
+    }
+
+
+    const exists =
+      allUsers.some(user =>
+
+        user.documentId !==
+        selectedUser.documentId &&
+
+        user.username
+          .toLowerCase() ===
+        name.toLowerCase()
+
+      );
+
+
+    if(exists){
+
+      showToast(
+        "Username already exists"
+      );
+
+      return;
+
+    }
+
+
+    try{
+
+      saveUsername.disabled = true;
+
+
+      await updateDoc(
+
+        doc(
+          db,
+          "users",
+          selectedUser.documentId
+        ),
+
+        {
+
+          username:name,
+
+          Username:name
+
+        }
+
+      );
+
+
+      const index =
+        allUsers.findIndex(user =>
+
+          user.documentId ===
+          selectedUser.documentId
+
+        );
+
+
+      if(index !== -1){
+
+        allUsers[index].username =
+          name;
+
+      }
+
+
+      if(
+        selectedChatUser &&
+
+        selectedChatUser.documentId ===
+        selectedUser.documentId
+      ){
+
+        selectedChatUser.username =
+          name;
+
+
+        chatUsername.textContent =
+          name;
+
+
+        chatLogo.textContent =
+          getAvatar(name);
+
+      }
+
+
+      renderUsers(allUsers);
+
+
+      usernameModal.classList.remove(
+        "show"
+      );
+
+
+      selectedUser = null;
+
+
+      showToast(
+        "Username changed"
+      );
+
+    }
+
+    catch(error){
+
+      console.error(error);
+
+      showToast(
+        "Could not change username"
+      );
+
+    }
+
+    finally{
+
+      saveUsername.disabled = false;
+
+    }
+
+  };
+
+
+// =====================================
+// DELETE FROM ADMIN LIST ONLY
+// =====================================
+
+deleteUserBtn.onclick = () => {
+
+  closeUserPopup();
+
+
+  if(!selectedUser){
+    return;
+  }
+
+
+  /*
+   * IMPORTANT:
+   *
+   * This does NOT delete the Firebase
+   * Authentication account.
+   *
+   * This does NOT delete the Firestore
+   * user document.
+   *
+   * It only removes the user from the
+   * current Admin page list.
+   */
+
+
+  allUsers =
+    allUsers.filter(user =>
+
+      user.documentId !==
+      selectedUser.documentId
+
+    );
+
+
+  renderUsers(allUsers);
+
+
+  selectedUser = null;
+
+
+  showToast(
+    "User removed from list"
+  );
+
+};
+
+
+// =====================================
+// OPEN CHAT
+// =====================================
+
+function openChat(user){
+
+  selectedChatUser =
+    user;
+
+
+  chatUsername.textContent =
+    user.username;
+
+
+  chatLogo.textContent =
+    getAvatar(user.username);
+
+
+  chatPage.classList.add(
+    "show"
+  );
+
+
+  chatMenu.classList.remove(
+    "show"
+  );
+
+
+  chatInput.value = "";
+
+
+  loadMessages(user);
+
+
+  setTimeout(() => {
+
+    chatInput.focus();
+
+  },150);
+
+}
+
+
+// =====================================
+// BACK FROM CHAT
+// =====================================
+
+chatBack.onclick = () => {
+
+  chatPage.classList.remove(
+    "show"
+  );
+
+
+  chatMenu.classList.remove(
+    "show"
+  );
+
+
+  if(unsubscribeMessages){
+
+    unsubscribeMessages();
+
+    unsubscribeMessages = null;
+
+  }
+
+
+  selectedChatUser = null;
+
+};
+// =====================================
+// CHAT MENU
+// =====================================
+
+chatMenuBtn.onclick = event => {
+
+  event.stopPropagation();
+
+  chatMenu.classList.toggle("show");
+
+};
+
+
+// =====================================
+// WALLPAPER
+// =====================================
+
+wallpaperBtn.onclick = () => {
+
+  chatMenu.classList.remove("show");
+
+  wallpaperInput.click();
+
+};
+
+
+wallpaperInput.onchange = event => {
+
+  const file =
+    event.target.files[0];
+
+  if(!file){
+    return;
+  }
+
+  const reader =
+    new FileReader();
+
+  reader.onload = e => {
+
+    const image =
+      e.target.result;
+
+    chatBody.style.backgroundImage =
+      `url("${image}")`;
+
+    try{
+
+      localStorage.setItem(
+        "virtualchat_admin_wallpaper",
+        image
+      );
+
+    }
+
+    catch(error){
+
+      console.error(error);
+
+    }
+
+  };
+
+  reader.readAsDataURL(file);
+
+};
+
+
+// =====================================
+// LOAD SAVED WALLPAPER
+// =====================================
+
+try{
+
+  const savedWallpaper =
+    localStorage.getItem(
+      "virtualchat_admin_wallpaper"
+    );
+
+  if(savedWallpaper){
+
+    chatBody.style.backgroundImage =
+      `url("${savedWallpaper}")`;
+
+  }
+
+}
+
+catch(error){
+
+  console.error(error);
+
+}
+
+
+// =====================================
+// LOAD MESSAGES
+// =====================================
+
+function loadMessages(user){
+
+  if(unsubscribeMessages){
+
+    unsubscribeMessages();
+
+    unsubscribeMessages = null;
+
+  }
+
+
+  chatBody.innerHTML = `
+    <div class="empty-messages">
+      Loading messages...
+    </div>
+  `;
+
+
+  const currentUid =
+    user.uid;
+
+
+  const q = query(
+
+    collection(db,"messages"),
+
+    where(
+      "participants",
+      "array-contains",
+      currentUid
+    )
+
+  );
+
+
+  unsubscribeMessages =
+    onSnapshot(
+
+      q,
+
+      snapshot => {
+
+        const messages = [];
+
+
+        snapshot.forEach(item => {
+
+          const data =
+            item.data();
+
+
+          if(
+
+            (
+              data.senderId === currentUid ||
+
+              data.receiverId === currentUid
+
+            )
+
+          ){
+
+            messages.push({
+
+              id:item.id,
+
+              ...data
+
+            });
+
+          }
+
+        });
+
+
+        messages.sort((a,b) => {
+
+          const aTime =
+            a.createdAt?.toMillis
+            ? a.createdAt.toMillis()
+            : 0;
+
+
+          const bTime =
+            b.createdAt?.toMillis
+            ? b.createdAt.toMillis()
+            : 0;
+
+
+          return aTime - bTime;
+
+        });
+
+
+        renderMessages(messages);
+
+      },
+
+      error => {
+
+        console.error(error);
+
+
+        chatBody.innerHTML = `
+          <div class="empty-messages">
+            Could not load messages.<br><br>
+            ${escapeHTML(error.message)}
+          </div>
+        `;
+
+      }
+
+    );
+
+}
+
+
+// =====================================
+// RENDER CHAT MESSAGES
+// =====================================
+
+function renderMessages(messages){
+
+  chatBody.innerHTML = "";
+
+
+  if(!messages.length){
+
+    chatBody.innerHTML = `
+      <div class="empty-messages">
+        No messages yet.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  messages.forEach(data => {
+
+    const mine =
+      data.senderId === auth.currentUser?.uid;
+
+
+    const row =
+      document.createElement("div");
+
+
+    row.className =
+      mine
+      ? "message-row admin"
+      : "message-row user";
+
+
+    const bubble =
+      document.createElement("div");
+
+
+    bubble.className =
+      "message-bubble";
+
+
+    bubble.innerHTML = `
+
+      ${escapeHTML(data.text || "")}
+
+      <span class="message-time">
+
+        ${escapeHTML(
+          getMessageTime(
+            data.createdAt
+          )
+        )}
+
+      </span>
+
+    `;
+
+
+    row.appendChild(bubble);
+
+    chatBody.appendChild(row);
+
+  });
+
+
+  requestAnimationFrame(() => {
+
+    chatBody.scrollTop =
+      chatBody.scrollHeight;
+
+  });
+
+}
+
+
+// =====================================
+// SEND ADMIN MESSAGE
+// =====================================
+
+async function sendAdminMessage(){
+
+  if(!selectedChatUser){
+
+    showToast(
+      "Select a user first"
+    );
+
+    return;
+
+  }
+
+
+  const text =
+    chatInput.value.trim();
+
+
+  if(!text){
+    return;
+  }
+
+
+  const admin =
+    auth.currentUser;
+
+
+  if(!admin){
+
+    showToast(
+      "Admin is not logged in"
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    chatSend.disabled = true;
+
+
+    await addDoc(
+
+      collection(db,"messages"),
+
+      {
+
+        senderId:
+          admin.uid,
+
+        receiverId:
+          selectedChatUser.uid,
+
+        text:
+          text,
+
+        participants:[
+          admin.uid,
+          selectedChatUser.uid
+        ],
+
+        createdAt:
+          serverTimestamp()
+
+      }
+
+    );
+
+
+    chatInput.value = "";
+
+    chatInput.focus();
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+
+    showToast(
+      "Message could not be sent"
+    );
+
+  }
+
+  finally{
+
+    chatSend.disabled = false;
+
+  }
+
+}
+
+
+chatSend.onclick =
+  sendAdminMessage;
+
+
+chatInput.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+
+      event.preventDefault();
+
+      sendAdminMessage();
+
+    }
+
+  }
+);
+
+
+// =====================================
+// CLOSE POPUPS
+// =====================================
+
+document.addEventListener(
+  "click",
+  event => {
+
+    if(
+
+      !userPopup.contains(
+        event.target
+      )
+
+      &&
+
+      !event.target.closest(
+        ".user-menu-btn"
+      )
+
+    ){
+
+      closeUserPopup();
+
+    }
+
+
+    if(
+
+      !chatMenu.contains(
+        event.target
+      )
+
+      &&
+
+      event.target !==
+      chatMenuBtn
+
+    ){
+
+      chatMenu.classList.remove(
+        "show"
+      );
+
+    }
+
+  }
+);
+
+
+// =====================================
+// ADMIN SIDE MENU
+// =====================================
+
+topMenuBtn.onclick = event => {
+
+  event.stopPropagation();
+
+  sideMenu.classList.add(
+    "show"
+  );
+
+  overlay.classList.add(
+    "show"
+  );
+
+};
+
+
+function closeSideMenu(){
+
+  sideMenu.classList.remove(
+    "show"
+  );
+
+  overlay.classList.remove(
+    "show"
+  );
+
+}
+
+
+overlay.onclick =
+  closeSideMenu;
+
+
+refreshBtn.onclick = async () => {
+
+  closeSideMenu();
+
+  await loadUsers();
+
+  showToast(
+    "Users refreshed"
+  );
+
+};
+
+
+// =====================================
+// LOGOUT
+// =====================================
+
+logoutBtn.onclick = async () => {
+
+  try{
+
+    if(unsubscribeMessages){
+
+      unsubscribeMessages();
+
+      unsubscribeMessages = null;
+
+    }
+
+
+    await signOut(auth);
+
+
+    window.location.replace(
+      "index.html"
+    );
+
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Logout failed"
+    );
+
+  }
+
+};
+
+
+// =====================================
+// USERNAME MODAL OUTSIDE CLICK
+// =====================================
+
+usernameModal.onclick =
+  event => {
+
+    if(
+      event.target ===
+      usernameModal
+    ){
+
+      usernameModal.classList.remove(
+        "show"
+      );
+
+      selectedUser = null;
+
+    }
+
+  };
+
+
+// =====================================
+// ENTER TO SAVE USERNAME
+// =====================================
+
+newUsername.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+
+      event.preventDefault();
+
+      saveUsername.click();
+
+    }
+
+    if(event.key === "Escape"){
+
+      usernameModal.classList.remove(
+        "show"
+      );
+
+      selectedUser = null;
+
+    }
+
+  }
+);
+
+
+// =====================================
+// AUTH CHECK
+// =====================================
+
+onAuthStateChanged(
+  auth,
+  async user => {
+
+    if(!user){
+
+      window.location.replace(
+        "index.html"
+      );
+
+      return;
+
+    }
+
+
+    try{
+
+      const adminQuery =
+        query(
+
+          collection(db,"users"),
+
+          where(
+            "uid",
+            "==",
+            user.uid
+          )
+
+        );
+
+
+      const adminSnapshot =
+        await getDocs(
+          adminQuery
+        );
+
+
+      let isAdmin = false;
+
+
+      adminSnapshot.forEach(
+        adminDoc => {
+
+          const data =
+            adminDoc.data();
+
+
+          const role =
+            getRole(data);
+
+
+          if(role === "admin"){
+
+            isAdmin = true;
+
+          }
+
+        }
+      );
+
+
+      /*
+       * যদি Firebase Auth user-এর
+       * Firestore document-এ role না থাকে,
+       * তাহলে ADMIN_EMAIL দিয়ে fallback
+       * check করা হবে।
+       */
+
+      if(
+        !isAdmin &&
+        user.email ===
+        "mdhacker8772@gmail.com"
+      ){
+
+        isAdmin = true;
+
+      }
+
+
+      if(!isAdmin){
+
+        await signOut(auth);
+
+        window.location.replace(
+          "index.html"
+        );
+
+        return;
+
+      }
+
+
+      await loadUsers();
+
+    }
+
+    catch(error){
+
+      console.error(error);
+
+
+      userList.innerHTML = `
+        <div class="empty-box">
+
+          <div class="empty-title">
+            Access Error
+          </div>
+
+          <div class="empty-text">
+            ${escapeHTML(
+              error.message
+            )}
+          </div>
+
+        </div>
+      `;
+
+    }
+
+  }
+);
+
+
+// =====================================
+// PAGE CLEANUP
+// =====================================
+
+window.addEventListener(
+  "beforeunload",
+  () => {
+
+    if(unsubscribeMessages){
+
+      unsubscribeMessages();
+
+      unsubscribeMessages = null;
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
